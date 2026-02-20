@@ -230,11 +230,9 @@ public struct KSVideoPlayerView: View {
             // 设置opacity为0，还是会去更新View。所以只能这样了
             if playerCoordinator.isMaskShow {
                 VideoTimeShowView(config: playerCoordinator, model: playerCoordinator.timemodel)
-                    #if !os(tvOS)
                     .onAppear {
                         focusableField = .controller
                     }
-                    #endif
                     .onDisappear {
                         focusableField = .play
                     }
