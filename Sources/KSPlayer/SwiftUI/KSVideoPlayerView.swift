@@ -382,6 +382,12 @@ struct VideoControllerView: View {
                     .layoutPriority(2)
                 HStack {
                     Button {
+                        config.isMaskShow = false
+                    } label: {
+                        Image(systemName: "xmark.circle.fill")
+                    }
+                    .frame(width: 56)
+                    Button {
                         if config.state.isPlaying {
                             config.playerLayer?.pause()
                         } else {
@@ -404,12 +410,6 @@ struct VideoControllerView: View {
                         .frame(width: 56)
                     infoButton
                         .frame(width: 56)
-                    Button {
-                        config.isMaskShow = false
-                    } label: {
-                        Image(systemName: "xmark.circle.fill")
-                    }
-                    .frame(width: 56)
                 }
                 .font(.caption)
             }
