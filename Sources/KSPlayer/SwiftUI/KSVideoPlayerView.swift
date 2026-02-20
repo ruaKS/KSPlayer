@@ -502,6 +502,11 @@ struct VideoControllerView: View {
                 .navigationTitle("Subtitle")
             }
         }
+        .onChange(of: showSubtitlePicker) { isShowing in
+            if isShowing {
+                config.playerLayer?.pause()
+            }
+        }
         .sheet(isPresented: $showPlaybackRatePicker) {
             let currentRate = config.playbackRate
             NavigationStack {
@@ -524,6 +529,11 @@ struct VideoControllerView: View {
                 .navigationTitle("Playback Speed")
             }
         }
+        .onChange(of: showPlaybackRatePicker) { isShowing in
+            if isShowing {
+                config.playerLayer?.pause()
+            }
+        }
         .sheet(isPresented: $showAudioPicker) {
             let audioTracks = config.playerLayer?.player.tracks(mediaType: .audio) ?? []
             NavigationStack {
@@ -544,6 +554,11 @@ struct VideoControllerView: View {
                     }
                 }
                 .navigationTitle("Audio Track")
+            }
+        }
+        .onChange(of: showAudioPicker) { isShowing in
+            if isShowing {
+                config.playerLayer?.pause()
             }
         }
         #endif
