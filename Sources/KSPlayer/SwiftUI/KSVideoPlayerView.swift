@@ -366,6 +366,12 @@ struct VideoControllerView: View {
     private var showPlaybackRatePicker = false
     @State
     private var showAudioPicker = false
+    @State
+    private var cachedAudioTracks: [MediaPlayerTrack] = []
+    @State
+    private var cachedSubtitles: [(id: String, name: String, info: any SubtitleInfo)] = []
+    @State
+    private var cachedSelectedSubtitleID: String? = nil
     @Environment(\.dismiss)
     private var dismiss
     @Namespace private var controllerNamespace
@@ -465,8 +471,6 @@ struct VideoControllerView: View {
         }
         #if os(tvOS)
         .sheet(isPresented: $showSubtitlePicker) {
-            let subtitleInfos = config.subtitleModel.subtitleInfos
-            let selectedID = config.subtitleModel.selectedSubtitleInfo?.subtitleID
             NavigationStack {
                 List {
                     Button {
@@ -476,23 +480,23 @@ struct VideoControllerView: View {
                         HStack {
                             Text("Off")
                             Spacer()
-                            if selectedID == nil {
+                            if cachedSelectedSubtitleID == nil {
                                 Image(systemName: "checkmark")
                             }
                         }
                     }
-                    ForEach(subtitleInfos, id: \.subtitleID) { info in
+                    ForEach(cachedSubtitles, id: \.id) { item in
                         Button {
-                            config.subtitleModel.selectedSubtitleInfo = info
-                            if let track = info as? MediaPlayerTrack {
+                            config.subtitleModel.selectedSubtitleInfo = item.info
+                            if let track = item.info as? MediaPlayerTrack {
                                 config.playerLayer?.player.select(track: track)
                             }
                             showSubtitlePicker = false
                         } label: {
                             HStack {
-                                Text(info.name)
+                                Text(item.name)
                                 Spacer()
-                                if selectedID == info.subtitleID {
+                                if cachedSelectedSubtitleID == item.id {
                                     Image(systemName: "checkmark")
                                 }
                             }
@@ -500,11 +504,6 @@ struct VideoControllerView: View {
                     }
                 }
                 .navigationTitle("Subtitle")
-            }
-        }
-        .onChange(of: showSubtitlePicker) { isShowing in
-            if isShowing {
-                config.playerLayer?.pause()
             }
         }
         .sheet(isPresented: $showPlaybackRatePicker) {
@@ -529,16 +528,10 @@ struct VideoControllerView: View {
                 .navigationTitle("Playback Speed")
             }
         }
-        .onChange(of: showPlaybackRatePicker) { isShowing in
-            if isShowing {
-                config.playerLayer?.pause()
-            }
-        }
         .sheet(isPresented: $showAudioPicker) {
-            let audioTracks = config.playerLayer?.player.tracks(mediaType: .audio) ?? []
             NavigationStack {
                 List {
-                    ForEach(audioTracks, id: \.trackID) { track in
+                    ForEach(cachedAudioTracks, id: \.trackID) { track in
                         Button {
                             config.playerLayer?.player.select(track: track)
                             showAudioPicker = false
@@ -554,11 +547,6 @@ struct VideoControllerView: View {
                     }
                 }
                 .navigationTitle("Audio Track")
-            }
-        }
-        .onChange(of: showAudioPicker) { isShowing in
-            if isShowing {
-                config.playerLayer?.pause()
             }
         }
         #endif
@@ -590,6 +578,8 @@ struct VideoControllerView: View {
     private func audioButton(audioTracks: [MediaPlayerTrack]) -> some View {
         #if os(tvOS)
         Button {
+            cachedAudioTracks = audioTracks
+            config.playerLayer?.pause()
             showAudioPicker = true
         } label: {
             Image(systemName: "waveform.circle.fill")
@@ -618,6 +608,9 @@ struct VideoControllerView: View {
     private var subtitleButton: some View {
         #if os(tvOS)
         Button {
+            cachedSubtitles = config.subtitleModel.subtitleInfos.map { (id: $0.subtitleID, name: $0.name, info: $0) }
+            cachedSelectedSubtitleID = config.subtitleModel.selectedSubtitleInfo?.subtitleID
+            config.playerLayer?.pause()
             showSubtitlePicker = true
         } label: {
             Image(systemName: "captions.bubble.fill")
