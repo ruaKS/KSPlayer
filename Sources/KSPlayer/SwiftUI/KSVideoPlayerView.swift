@@ -368,6 +368,7 @@ struct VideoControllerView: View {
     private var showAudioPicker = false
     @Environment(\.dismiss)
     private var dismiss
+    @Namespace private var controllerNamespace
     public var body: some View {
         VStack {
             #if os(tvOS)
@@ -387,6 +388,9 @@ struct VideoControllerView: View {
                         Image(systemName: "xmark.circle.fill")
                     }
                     .frame(width: 56)
+                    #if os(tvOS)
+                    .prefersDefaultFocus(in: controllerNamespace)
+                    #endif
                     Button {
                         if config.state.isPlaying {
                             config.playerLayer?.pause()
@@ -412,6 +416,9 @@ struct VideoControllerView: View {
                         .frame(width: 56)
                 }
                 .font(.caption)
+                #if os(tvOS)
+                .focusScope(controllerNamespace)
+                #endif
             }
             #else
             HStack {
