@@ -373,12 +373,6 @@ struct VideoControllerView: View {
             #if os(tvOS)
             Spacer()
             HStack {
-                Button {
-                    config.isMaskShow = false
-                } label: {
-                    Image(systemName: "xmark.circle.fill")
-                }
-                .frame(width: 56)
                 Text(title)
                     .lineLimit(2)
                     .layoutPriority(3)
@@ -410,6 +404,12 @@ struct VideoControllerView: View {
                         .frame(width: 56)
                     infoButton
                         .frame(width: 56)
+                    Button {
+                        config.isMaskShow = false
+                    } label: {
+                        Image(systemName: "xmark.circle.fill")
+                    }
+                    .frame(width: 56)
                 }
                 .font(.caption)
             }
