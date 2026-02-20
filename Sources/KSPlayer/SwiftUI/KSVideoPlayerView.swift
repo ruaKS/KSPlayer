@@ -406,14 +406,8 @@ struct VideoControllerView: View {
                     }
                     muteButton
                         .frame(width: 56)
-                    contentModeButton
-                        .frame(width: 56)
                     subtitleButton
                     playbackRateButton
-                    pipButton
-                        .frame(width: 56)
-                    infoButton
-                        .frame(width: 56)
                 }
                 .font(.title2)
                 #if os(tvOS)
