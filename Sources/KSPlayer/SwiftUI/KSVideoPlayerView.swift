@@ -465,6 +465,8 @@ struct VideoControllerView: View {
         }
         #if os(tvOS)
         .sheet(isPresented: $showSubtitlePicker) {
+            let subtitleInfos = config.subtitleModel.subtitleInfos
+            let selectedID = config.subtitleModel.selectedSubtitleInfo?.subtitleID
             NavigationStack {
                 List {
                     Button {
@@ -474,12 +476,12 @@ struct VideoControllerView: View {
                         HStack {
                             Text("Off")
                             Spacer()
-                            if config.subtitleModel.selectedSubtitleInfo == nil {
+                            if selectedID == nil {
                                 Image(systemName: "checkmark")
                             }
                         }
                     }
-                    ForEach(config.subtitleModel.subtitleInfos, id: \.subtitleID) { info in
+                    ForEach(subtitleInfos, id: \.subtitleID) { info in
                         Button {
                             config.subtitleModel.selectedSubtitleInfo = info
                             if let track = info as? MediaPlayerTrack {
@@ -490,7 +492,7 @@ struct VideoControllerView: View {
                             HStack {
                                 Text(info.name)
                                 Spacer()
-                                if config.subtitleModel.selectedSubtitleInfo?.subtitleID == info.subtitleID {
+                                if selectedID == info.subtitleID {
                                     Image(systemName: "checkmark")
                                 }
                             }
@@ -501,6 +503,7 @@ struct VideoControllerView: View {
             }
         }
         .sheet(isPresented: $showPlaybackRatePicker) {
+            let currentRate = config.playbackRate
             NavigationStack {
                 List {
                     ForEach([0.5, 1.0, 1.25, 1.5, 2.0] as [Float], id: \.self) { rate in
@@ -511,7 +514,7 @@ struct VideoControllerView: View {
                             HStack {
                                 Text("\(rate, specifier: "%.2f") x")
                                 Spacer()
-                                if config.playbackRate == rate {
+                                if currentRate == rate {
                                     Image(systemName: "checkmark")
                                 }
                             }
@@ -522,20 +525,19 @@ struct VideoControllerView: View {
             }
         }
         .sheet(isPresented: $showAudioPicker) {
+            let audioTracks = config.playerLayer?.player.tracks(mediaType: .audio) ?? []
             NavigationStack {
                 List {
-                    if let audioTracks = config.playerLayer?.player.tracks(mediaType: .audio) {
-                        ForEach(audioTracks, id: \.trackID) { track in
-                            Button {
-                                config.playerLayer?.player.select(track: track)
-                                showAudioPicker = false
-                            } label: {
-                                HStack {
-                                    Text(track.description)
-                                    Spacer()
-                                    if track.isEnabled {
-                                        Image(systemName: "checkmark")
-                                    }
+                    ForEach(audioTracks, id: \.trackID) { track in
+                        Button {
+                            config.playerLayer?.player.select(track: track)
+                            showAudioPicker = false
+                        } label: {
+                            HStack {
+                                Text(track.description)
+                                Spacer()
+                                if track.isEnabled {
+                                    Image(systemName: "checkmark")
                                 }
                             }
                         }
