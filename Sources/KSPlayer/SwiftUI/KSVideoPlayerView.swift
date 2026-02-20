@@ -374,7 +374,7 @@ struct VideoControllerView: View {
             Spacer()
             HStack {
                 Button {
-                    dismiss()
+                    config.isMaskShow = false
                 } label: {
                     Image(systemName: "xmark.circle.fill")
                 }
