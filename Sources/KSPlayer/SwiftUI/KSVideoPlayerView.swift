@@ -373,6 +373,12 @@ struct VideoControllerView: View {
             #if os(tvOS)
             Spacer()
             HStack {
+                Button {
+                    dismiss()
+                } label: {
+                    Image(systemName: "xmark.circle.fill")
+                }
+                .frame(width: 56)
                 Text(title)
                     .lineLimit(2)
                     .layoutPriority(3)
